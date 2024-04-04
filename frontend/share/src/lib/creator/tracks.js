@@ -13,6 +13,7 @@ const tracks = [
         category: [], 
         bpm: ''
       },     
+
       price: '',
       sales: '',
       likes:'',
