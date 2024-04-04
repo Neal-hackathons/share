@@ -7,24 +7,12 @@ const tracks = [
       author: '',
       authorAddress: '',
       desc: '',
-      attributes: [
-        {
-            name: 'instruments',
-            value: [],
-        },
-        {
-            name: 'genres',
-            value: [],
-        },
-        {
-            name: 'category',
-            value: '' /**one shot or loop */,
-        },
-        {
-            name: 'bpm',
-            value: '',
-        }
-      ],        
+      attributes: {
+        genres: [],
+        instruments: [],
+        category: [], 
+        bpm: ''
+      },     
       price: '',
       sales: '',
       likes:'',
