@@ -112,8 +112,12 @@ export default function Page() {
         setPreviewCover(res)
         })
       }
+
+      reader(audioFile, (err, res) => {
+        setData(prev => {return {...prev, [e.target.name]: createReadStream(res)}})
+      })
       
-        setData(prev => {return {...prev, [e.target.name]: e.target.files[0]}})
+      //setData(prev => {return {...prev, [e.target.name]: e.target.files[0]}})
       
     }
 
