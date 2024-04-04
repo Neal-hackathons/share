@@ -5,7 +5,6 @@ import Link from "next/link"
 import {instruments, genres, category} from '@/lib/category'
 import {
   ChevronLeft,
-  Upload,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -27,7 +26,7 @@ import {
 } from "@/components/ui/select"
 
 import { Textarea } from "@/components/ui/textarea"
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -46,14 +45,43 @@ export default function Page() {
         },
         cover: '',
         src: '',
-        cid: '',
+        author: 'john doe',
+        authorAddress: 'address'
     })
-    const [imgFile, setImgFile] = useState('')
-    const [trackFile, setTrackFile] = useState('')
-    const [uploading, setUploading] = useState(false);
+    const [previewCover, setPreviewCover] = useState('')
+    const [uploading, setUploading] = useState(false)
+    
 
-    function handleSubmit(e) {
-        console.log(e)
+    async function handleSubmit(e, data) {
+      e.preventDefault()
+      setUploading(true);
+      try{
+      console.log(data)
+      const fileData = new FormData()
+      for(const [key, value] of Object.entries(data)){
+
+        if(key === 'attributes'){
+          fileData.append(key, JSON.stringify(value))
+        }else{
+          fileData.append(key, value)
+        }
+      }
+
+
+      const res = await fetch('/api/upload', {
+        method: "POST",
+        body: fileData
+      })
+      
+      const resData = await res.json()
+      console.log(resData)
+      setUploading(false);
+
+        }catch(e) {
+          console.log(e)
+          setUploading(false);
+        }
+
     }
 
     function handleChange(e) {
@@ -69,8 +97,6 @@ export default function Page() {
 
     }
 
-    useEffect(()=>{console.log(data)}, [data])
-    const inputImg = useRef()
 
     function reader(file, callback){
       const fr = new FileReader();
@@ -81,16 +107,21 @@ export default function Page() {
     }
 
     function handleFile(e){
-      reader(e.target.files[0], (err, res) => {
-        setData(prev =>{ return {...prev, [e.target.name]: res}})
-      })
+      if(e.target.name === 'cover'){
+        reader(e.target.files[0], (err, res) => {
+        setPreviewCover(res)
+        })
+      }
+      
+        setData(prev => {return {...prev, [e.target.name]: e.target.files[0]}})
+      
     }
 
   return (
     <div className="flex min-h-screen w-full flex-col">
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <form onSubmit={(e) => handleSubmit(e)}>
+        <form onSubmit={(e) => handleSubmit(e, data)}>
           <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
             <div className="flex items-center gap-4">
               <Button variant="outline" size="icon" className="h-7 w-7" asChild>
@@ -138,6 +169,7 @@ export default function Page() {
                         <Textarea
                           name="desc"
                           onChange={(e) => handleChange(e)}
+                          required
                           value={data.desc}
                           placeholder="Saisissez une description pour votre piste"
                           className="min-h-32"
@@ -149,6 +181,7 @@ export default function Page() {
                           name="price"
                           onChange={(e) => handleChange(e)}
                           value={data.price}
+                          required
                           type="number"
                           className="w-full"
                           placeholder="Indiquez le prix de votre piste"
@@ -193,6 +226,7 @@ export default function Page() {
                                                   }
                                                 }}
                                                 name="genres"
+                                                id="genres"
                                             />
                                             <label className="text-tiny ">{el}</label>
                                         </div>
@@ -232,8 +266,9 @@ export default function Page() {
                                                 }
                                               }}
                                               name="instruments"
+                                              id='instruments'
                                           />
-                                          <label className="text-tiny ">{el}</label>
+                                          <label  className="text-tiny ">{el}</label>
                                       </div>
                                   )
                               })
@@ -242,7 +277,7 @@ export default function Page() {
                       </ScrollArea>
                       </div>
                       <div className="flex flex-col gap-4 w-[33%]">
-                      <label htmlFor="genres">category</label>
+                      <label htmlFor="genres">Category</label>
                       <ScrollArea className="rounded-md border max-h-20 ">
                         <div className="p-4 flex flex-col gap-2">
                         
@@ -255,11 +290,11 @@ export default function Page() {
                                               checked={data.attributes.category.includes(el)}
                                               onCheckedChange={(checked) => {
                                                 const category = data.attributes.category
-                                                const isAlreadyChecked = genres.includes(el)
+                                                const isAlreadyChecked = category.includes(el)
 
                                                 if(checked && !isAlreadyChecked){
                                                   setData(prev => {
-                                                    return {...prev, attributes: {...prev.attributes, genres: [...category, el]}}
+                                                    return {...prev, attributes: {...prev.attributes, category: [...category, el]}}
                                                   })
                                                 }
 
@@ -271,8 +306,9 @@ export default function Page() {
                                                 }
                                               }}
                                               name="category"
+                                              id='category'
                                           />
-                                          <label className="text-tiny ">{el}</label>
+                                          <label  className="text-tiny ">{el}</label>
                                       </div>
                                   )
                               })
@@ -284,10 +320,10 @@ export default function Page() {
                       <Label htmlFor="bpm">BPM </Label>
                       <Input
                         name="bpm"
+                        id='bpm'
                         onChange={(e) => handleChange(e)}
                         value={data.attributes.bpm}
                         type="number"
-                        required
                         className="w-full"
                         placeholder="Indiquez le BPM"
                       />
@@ -323,49 +359,27 @@ export default function Page() {
                   <CardHeader>
                     <CardTitle>Fichiers</CardTitle>
                     <CardDescription>
-                      déposez votre titre et cover ici
+                      Déposez votre titre et cover ici
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid gap-2">
-                    <div className="relative flex flex-col items-center">
-                      <Image
-                        alt="Product image"
-                        className="aspect-square w-full rounded-md object-cover"
-                        height="300"
-                        src={data.cover !== '' ? data.cover : '/cover.jpeg'}
-                        width="300"
-                      />
-                      <input className="w-full" id="cover" name="cover" accept="image/png, image/jpeg" type="file" ref={inputImg} onChange={handleFile}/>
-                      {/**<Button className="absolute bottom-0" disabled={uploading} type="button" onClick={() => inputFile.current.click()} >
-                          {uploading ? 'Chargement...' : 'Chargez une image'}
-                        </Button>*/}
-                      </div>
-                      
-                      <div className="grid grid-cols-3 gap-2">
-                        <button>
+                    <div className="grid gap-4">
+                      <div className="flex flex-col items-center gap-2">
                           <Image
                             alt="Product image"
                             className="aspect-square w-full rounded-md object-cover"
-                            height="84"
-                            src="/cover.jpeg"
-                            width="84"
+                            height="300"
+                            src={previewCover !== '' ? previewCover : '/cover.jpeg'}
+                            width="300"
                           />
-                        </button>
-                        <button>
-                          <Image
-                            alt="Product image"
-                            className="aspect-square w-full rounded-md object-cover"
-                            height="84"
-                            src="/cover.jpeg"
-                            width="84"
-                          />
-                        </button>
-                        <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed">
-                          <Upload className="h-4 w-4 text-muted-foreground" />
-                          <span className="sr-only">Upload</span>
-                        </button>
-                      </div>
+                          <input className="w-full" id="cover" name="cover" accept="image/png, image/jpeg" type="file" onChange={handleFile}/>
+                        </div>
+                        
+                        <div className="flex flex-col items-center gap-2">
+                          <label htmlFor="src">Inserez votre piste <span className="text-primary">*</span>: </label>
+                          <input className="w-full" id="src" name="src" required accept="audio" type="file" onChange={handleFile}/>
+                        </div>
+
                     </div>
                   </CardContent>
                 </Card>
