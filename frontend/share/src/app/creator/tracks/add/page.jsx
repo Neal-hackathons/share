@@ -151,7 +151,7 @@ export default function Page() {
                   <CardHeader>
                     <CardTitle>Informations de base</CardTitle>
                     <CardDescription>
-                        En publiant, vous confirmez que vos fichiers audio sont conformes à nos Conditions d'utilisation et que vous ne violez pas les droits d'un tiers.
+                        En publiant, vous confirmez que vos fichiers audio sont conformes à nos Conditions d&apos;utilisation et que vous ne violez pas les droits d&apos;un tiers.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
