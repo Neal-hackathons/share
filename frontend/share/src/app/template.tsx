@@ -2,21 +2,18 @@
 
 import Link from "next/link"
 import {
-  CircleUser,
   Menu,
   Search,
+  Home,
+  Radio,
+  TrendingUp,
+  Heart,
+  Globe,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { usePathname } from 'next/navigation'
@@ -34,7 +31,7 @@ export default function template({ children }: { children: React.ReactNode }) {
     !isCreator ?
       <div className="flex min-h-screen w-full flex-col">
         <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-          <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-tiny lg:gap-6">
+          <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-tiny lg:gap-6 text-nowrap">
             <Link
               href="/"
               className="flex items-center gap-2 text-xl font-semibold md:text-lg"
@@ -42,28 +39,22 @@ export default function template({ children }: { children: React.ReactNode }) {
               <span>Share</span>
             </Link>
             <Link
-              href="/creator"
+              href="/user/tracks"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Dashboard
+              Mes Tracks
             </Link>
             <Link
-              href="/creator/sales"
+              href="/community"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Ventes
+              Communauté
             </Link>
             <Link
-              href="/creator/tracks"
+              href="/blog"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Tracks
-            </Link>
-            <Link
-              href="/creator/analytics"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Analytics
+              Blog
             </Link>
           </nav>
 
@@ -127,9 +118,60 @@ export default function template({ children }: { children: React.ReactNode }) {
         </header>
 
 
-        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-            {children}
-        </main>
+        <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+          <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+            <div className="hidden border-r bg-muted/40 md:block">
+              <div className="flex h-full max-h-screen flex-col gap-2">
+                <div className="flex-1">
+                  <nav className="grid gap-4 items-start px-2 py-6 text-base font-medium lg:px-4">
+                    <Link
+                      href="#"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                    >
+                      <Home className="h-4 w-4" />
+                      Accueil
+                    </Link>
+                    <Link
+                      href="#"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                    >
+                      <Globe className="h-4 w-4"/>
+                      Explorer
+                    </Link>
+                    <Link
+                      href="#"
+                      className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+                    >
+                      <Heart  className="h-4 w-4"/>
+                      Likes
+                    </Link>
+                    <Link
+                      href="#"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                    >
+                    <TrendingUp className="h-4 w-4"/>
+                      Top trends
+                    </Link>
+                    <Link
+                      href="#"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                    >
+                      <Radio className="h-4 w-4" />
+                      Radio 
+                    </Link>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div className="flex flex-col">
+            <main className="grid gap-4 p-4 lg:gap-6 lg:p-6 ">
+              {children}
+            </main>
+          </div>
+        </div>
       </div>
       : <>{children}</>
     )
