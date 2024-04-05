@@ -21,7 +21,7 @@ import ConnectButton from "@/components/web3/ConnectButton"
 
 
 
-export default function template({ children }: { children: React.ReactNode }) {
+export default function Template({ children }: { children: React.ReactNode }) {
 
     const pathname = usePathname()
     const isCreator = pathname.includes('creator')

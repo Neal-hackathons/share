@@ -1,0 +1,1 @@
+export const GATEWAY_TOKEN = process.env.GATEWAY_TOKEN as string;
