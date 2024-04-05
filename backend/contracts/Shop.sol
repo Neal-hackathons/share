@@ -7,9 +7,7 @@ contract Shop {
 
     SFT sft = new SFT();
 
-    uint currentTrackID = 0;
-
-    mapping (uint => Track) trackFromID;
+    Track[] public tracks;
 
     mapping (address => uint[]) ownedTracks;
 
@@ -25,28 +23,51 @@ contract Shop {
         uint mintCounter;
     }
 
-    function publishTrack(uint _price) public {
-        currentTrackID += 1;
-        trackFromID[currentTrackID].author = msg.sender;
-        trackFromID[currentTrackID].price = _price;
+    function getBalance() external view returns (uint) {
+        return userBalance[msg.sender];
     }
 
-    function buyTrack(uint _id) public {
+    function getOwnedTracks(address _user) external view returns (uint[] memory) {
+        return ownedTracks[_user];
+    }
+
+    function getPublishedTracks(address _author) external view returns (uint[] memory) {
+        return publishedTracks[_author];
+    }
+
+    function publishTrack(uint _price) external {
+        Track memory newTrack;
+        newTrack.author = msg.sender;
+        newTrack.price = _price;
+        tracks.push(newTrack);
+        ownedTracks[msg.sender].push(tracks.length - 1);
+    }
+
+    function buyTrack(uint _id) external {
+        require(tracks.length > _id, "This track does not exist");
+        require(tracks[_id].author != msg.sender, "You can not buy your own track");
         require(!doesOwnTrack[msg.sender][_id], "You already bought this track");
-        require(userBalance[msg.sender] >= trackFromID[_id].price, "Insuficient balance");
-        userBalance[msg.sender] -= trackFromID[_id].price;
-        userBalance[trackFromID[_id].author] += trackFromID[_id].price;
+        require(userBalance[msg.sender] >= tracks[_id].price, "Insuficient balance");
+        userBalance[msg.sender] -= tracks[_id].price;
+        userBalance[tracks[_id].author] += tracks[_id].price;
         sft.mintOne(msg.sender, _id);
         ownedTracks[msg.sender].push(_id);
         doesOwnTrack[msg.sender][_id] = true;
-        trackFromID[_id].mintCounter += 1;
+        tracks[_id].mintCounter += 1;
     }
 
-    function withdraw(uint _amount) public {
+    function withdraw(uint _amount) external {
         require(userBalance[msg.sender] >= _amount, "Insuficient balance");
+        userBalance[msg.sender] -= _amount;
         (bool success, ) = msg.sender.call{value: _amount}("");
         require(success, "Withdraw failed");
     }
 
-    receive() external payable {}
+    function deposit() external payable {
+        userBalance[msg.sender] += msg.value;
+    }
+
+    receive() external payable {
+        userBalance[msg.sender] += msg.value;
+    }
 }
