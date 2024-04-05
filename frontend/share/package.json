@@ -37,6 +37,7 @@
     "pino-pretty": "^11.0.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.51.2",
     "readable-web-to-node-stream": "^3.0.2",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
