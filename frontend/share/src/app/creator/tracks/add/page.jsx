@@ -31,7 +31,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
 
 
-
 export default function Page() {
     const [data , setData] = useState({
         name: '',
@@ -56,18 +55,19 @@ export default function Page() {
       e.preventDefault()
       setUploading(true);
       try{
-      console.log(data)
       const fileData = new FormData()
+      
       for(const [key, value] of Object.entries(data)){
 
         if(key === 'attributes'){
-          fileData.append(key, JSON.stringify(value))
+          fileData.append(key, value)
         }else{
           fileData.append(key, value)
         }
+
+        console.log(fileData.get(key))
       }
-
-
+      
       const res = await fetch('/api/upload', {
         method: "POST",
         body: fileData
@@ -84,7 +84,7 @@ export default function Page() {
 
     }
 
-    function handleChange(e) {
+     function handleChange(e) {
     
       if(e.target.name === 'bpm'){
         setData(prev => {
@@ -97,27 +97,14 @@ export default function Page() {
 
     }
 
-
-    function reader(file, callback){
-      const fr = new FileReader();
-      fr.onload = () => callback(null, fr.result);
-      fr.onerror = (err) => callback(err);
-      fr.readAsDataURL(file);
-
-    }
-
-    function handleFile(e){
+    async function handleFile(e){
       if(e.target.name === 'cover'){
-        reader(e.target.files[0], (err, res) => {
-        setPreviewCover(res)
-        })
-      }
 
-      reader(audioFile, (err, res) => {
-        setData(prev => {return {...prev, [e.target.name]: createReadStream(res)}})
-      })
-      
-      //setData(prev => {return {...prev, [e.target.name]: e.target.files[0]}})
+        setPreviewCover(window.URL.createObjectURL(e.target.files[0]))
+
+      }
+ 
+      setData(prev => {return {...prev, [e.target.name]: e.target.files[0]}})
       
     }
 
